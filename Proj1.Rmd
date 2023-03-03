@@ -1,5 +1,5 @@
 ---
-title: "Unit 8"
+title: "Unit 8/9 Beer EDA"
 author: "Kyle Kuberski"
 date: "`r Sys.Date()`"
 output: html_document

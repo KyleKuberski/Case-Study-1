@@ -15,6 +15,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+##Introduction:
+
+#Hello Team Budweiser, I am excited to share with you an in-depth view of gathered data relating to both beers and breweries from around the United States. Today we will be walking through a multitude of cleaned, insightful, and easily interpreted datasets. From these datasets we will begin to understand differences in preference of beer, states that include the highest amounts of brewed beers, and overarching similaritys/differences between ABV and IBU values. By the end of this in depth review, you find this EDA both thought provoking and impactful on the current industry of beer. This may assist in guiding future business decisions and shape the way you perceive the current platform.
+
+```
 
 ## Breweries Per State
 ```{r}

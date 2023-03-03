@@ -1,15 +1,23 @@
 ---
-title: "Unit 8/9 Beer EDA"
-author: "Kyle Kuberski"
+title: "Unit 8"
+author: "Kyle Kuberski, Pejal Rath"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_notebook:
+    theme: darkly
+    toc: yes
+    toc_float: yes
+  html_document:
+    toc: yes
+    df_print: paged
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 
-
-
-#1.	How many breweries are present in each state?
-
+## Breweries Per State
+```{r}
 library(e1071)
 library(tm) #text mining library provides the stopwords() function
 library(tidyr)
@@ -24,6 +32,7 @@ library(ggplot2)
 library(plotly)
 library(ggthemes)
 
+#1.	How many breweries are present in each state?
 beer <- read.csv("https://raw.githubusercontent.com/KyleKuberski/MSDS_6306_Doing-Data-Science/Master/Unit%208%20and%209%20Case%20Study%201/Beers.csv")
 brewer <- read.csv("https://raw.githubusercontent.com/BivinSadler/MSDS_6306_Doing-Data-Science/Master/Unit%208%20and%209%20Case%20Study%201/Breweries.csv")
 
@@ -33,6 +42,20 @@ brewer=read.csv(file.choose(),header = TRUE)
 brewer %>% ggplot(aes(x=State,fill=State))+geom_histogram(stat="count")+theme(legend.position = "none")
 brewerByState=brewer %>% count(State)
 colnames(brewerByState)[2]="Count"
+```
+
+##Merge Datasets
+```{r}
+newbeer <- beer
+colnames(newbeer)[5]<- "Brew_ID"
+mergeboth <- merge(newbeer, brewer, by =c("Brew_ID"))
+printmerge <- head(mergeboth, 6)
+printmerge
+```
+
+## Missing Values
+
+```{r}
 
 #3. Address the missing values in each column.
 #Fill IBU missing value
@@ -53,6 +76,11 @@ for(i in 1:62)
 }
 # Change Ounces to factor type
 beer$Ounces=factor(beer$Ounces)
+```
+
+## Median ABV/IBU
+
+```{r}
 
 #4.	Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 beer_data <- merge(beer,brewer, by.x="Brewery_id",by.y="Brew_ID")
@@ -65,8 +93,11 @@ summary_ABVIBU<- beer_data %>% group_by(State) %>% summarize(median_ABV = median
 summary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=median_IBU),stat="identity",fill="Red")+labs(title = "Median IBU by State", x = "State",y = "Median IBU") +theme_bw()
 
 summary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=median_ABV),stat="identity",fill="blue")+labs(title = "Median Alcohol Content by State", x = "State",y = "Median Alcohol Content") +theme_bw()
+```
 
-#5
+## Min/Max ABV & IBU
+
+```{r}
 #Max for ABV
 beer_data[which.max(beer_data$ABV),]$State
 beer_data[which.max(beer_data$ABV),]$BreweryName
@@ -97,7 +128,9 @@ maxsummary_ABVIBU<- beer_data %>% group_by(State) %>% summarize(max_ABV = max(AB
 maxsummary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=max_ABV),stat="identity",fill="blue")+labs(title = "ABV Content by State", x = "State",y = "Max Alcohol Content") +theme_bw()
 
 maxsummary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=max_IBU),stat="identity",fill="red")+labs(title = "IBU Content by State", x = "State",y = "Max Alcohol Content") +theme_bw()
-
+```
+## Distribution
+```{r}
 #6 summary ABV and distribution of ABV
 
 beer_data[which.min(beer_data$ABV),]$State
@@ -110,17 +143,22 @@ labs(title = "Summary of ABV Across all States", x = "Alcohol by Volume (ABV)", 
 ggplot(beer_data, aes(ABV), col=State) + 
   geom_boxplot()
 
+```
 
+## GGPlot & Relationship
+
+```{r}
 #7 
 ggplot(beer_data, aes(x = ABV, y = IBU)) +
   geom_point() +
   labs(x = "Alcohol Content", y = "Bitterness")+geom_smooth()
   
 # Yes, there is an apparent relationship between the bitterness of the beer and its alcoholic content. Base on visualization, there are evidences to show the higher alcohol content then the beer also has higher IBU.
+```
 
+## KNN/CFM
 
-
-
+```{r}
 #8
 
 #create IPA/Ale dataframe 
@@ -128,7 +166,7 @@ ggplot(beer_data, aes(x = ABV, y = IBU)) +
 ipa_ale <- beer %>% filter(grepl('IPA|Ale', Style))
 ipa_ale$Style <- factor(ifelse(grepl("IPA", ipa_ale$Style), "IPA", "Ale"), levels = c("Ale", "IPA"))
 
-##KNN classifier training and test sets
+#KNN classifier training and test sets
 set.seed(123) # for reproducibility
 trainIndex <- createDataPartition(ipa_ale$Style, p = .8, list = FALSE)
 train <- ipa_ale[trainIndex, ]
@@ -139,8 +177,8 @@ k <- 3
 model <- knn(train[, c("ABV", "IBU")], test = test[, c("ABV", "IBU")], cl = train$Style, k = k)
 
 
-##levels will not work unless they are the same level and both factors
-### Using grepl to check variables for IPA, and assigning it to IPA as a level (same for Ale)
+#levels will not work unless they are the same level and both factors
+# Using grepl to check variables for IPA, and assigning it to IPA as a level (same for Ale)
 ipa_ale$Style <- factor(ifelse(grepl("IPA", ipa_ale$Style), "IPA", "Ale"), levels = c("Ale", "IPA"))
 
 confusionMatrix(model, reference = test$Style)
@@ -153,7 +191,10 @@ ggplot(ipa_ale, aes(x = ABV, y = IBU, color = Style)) +
   geom_point() + 
   labs(title = "Relationship between ABV and IBU for IPAs and Ales", 
        x = "ABV", y = "IBU")
+```
 
+##Creative EDA
+```{r}
 #9
 data_ca <- beer_data %>% filter(State==" CO")
 group_style<- data_ca%>% group_by(Style) %>% 

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #Hello Team Budweiser, I am excited to share with you an in-depth view of gathered data relating to both beers and breweries from around the United States. Today we will be walking through a multitude of cleaned, insightful, and easily interpreted datasets. From these datasets we will begin to understand differences in preference of beer, states that include the highest amounts of brewed beers, and overarching similaritys/differences between ABV and IBU values. By the end of this in depth review, you find this EDA both thought provoking and impactful on the current industry of beer. This may assist in guiding future business decisions and shape the way you perceive the current platform.
 
 ```
-
+#Here we will load our libraries and display the amount of breweries present in each state.
 ## Breweries Per State
 ```{r}
 library(e1071)
@@ -49,7 +49,7 @@ brewer %>% ggplot(aes(x=State,fill=State))+geom_histogram(stat="count")+theme(le
 brewerByState=brewer %>% count(State)
 colnames(brewerByState)[2]="Count"
 ```
-
+#Now, we will merge the two datasets by "Brew_ID" to make one large dataset containing all information.
 ##Merge Datasets
 ```{r}
 newbeer <- beer
@@ -58,7 +58,7 @@ mergeboth <- merge(newbeer, brewer, by =c("Brew_ID"))
 printmerge <- head(mergeboth, 6)
 printmerge
 ```
-
+#Due to NA values, errors can be thrown when trying to interpret the data. Here we clean these missing values.
 ## Missing Values
 
 ```{r}
@@ -83,7 +83,7 @@ for(i in 1:62)
 # Change Ounces to factor type
 beer$Ounces=factor(beer$Ounces)
 ```
-
+#Lets find the median values of both ABV and IBU within all beers.
 ## Median ABV/IBU
 
 ```{r}
@@ -100,7 +100,7 @@ summary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=median_IBU),stat="identit
 
 summary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=median_ABV),stat="identity",fill="blue")+labs(title = "Median Alcohol Content by State", x = "State",y = "Median Alcohol Content") +theme_bw()
 ```
-
+#We will now find the minimum and maximum values for ABV and IBU with all beers.
 ## Min/Max ABV & IBU
 
 ```{r}
@@ -135,6 +135,7 @@ maxsummary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=max_ABV),stat="identit
 
 maxsummary_ABVIBU %>% ggplot(aes(x=State))+geom_bar(aes(y=max_IBU),stat="identity",fill="red")+labs(title = "IBU Content by State", x = "State",y = "Max Alcohol Content") +theme_bw()
 ```
+#Lets make a visual graph showing the overall Distribution of ABV.
 ## Distribution
 ```{r}
 #6 summary ABV and distribution of ABV
@@ -150,7 +151,7 @@ ggplot(beer_data, aes(ABV), col=State) +
   geom_boxplot()
 
 ```
-
+#We will use GGPlot to view the overall relationships between ABV and IBU values in beer.
 ## GGPlot & Relationship
 
 ```{r}
@@ -161,7 +162,7 @@ ggplot(beer_data, aes(x = ABV, y = IBU)) +
   
 # Yes, there is an apparent relationship between the bitterness of the beer and its alcoholic content. Base on visualization, there are evidences to show the higher alcohol content then the beer also has higher IBU.
 ```
-
+#Using a KNN Classifier as well as a confusion matrix, we will take a look at different levels of IBU/ABV within Ales and IPAs.
 ## KNN/CFM
 
 ```{r}
@@ -198,7 +199,7 @@ ggplot(ipa_ale, aes(x = ABV, y = IBU, color = Style)) +
   labs(title = "Relationship between ABV and IBU for IPAs and Ales", 
        x = "ABV", y = "IBU")
 ```
-
+#Here we find interesting characteristics in the overarching dataset and visually graph them for clean interpretation.
 ##Creative EDA
 ```{r}
 #9

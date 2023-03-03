@@ -50,10 +50,11 @@ brewer %>% ggplot(aes(x=State,fill=State))+geom_histogram(stat="count")+theme(le
 brewerByState=brewer %>% count(State)
 colnames(brewerByState)[2]="Count"
 ```
-# There are a multitude of breweries present within each state. The top states include California and Colorado, with some states like North Dakota, South Dakota, and the Distric of Columbia
+
+#There are a multitude of breweries present within each state. The top states include California and Colorado, with some states like North Dakota, South Dakota, and the Distric of Columbia
 
 
-##Merge Datasets
+## Merge Datasets
 ```{r}
 #Now, we will merge the two datasets by "Brew_ID" to make one large dataset containing all information.
 #2.
@@ -180,7 +181,7 @@ ggplot(beer_data, aes(x = ABV, y = IBU)) +
   labs(x = "Alcohol Content", y = "Bitterness")+geom_smooth()
   
 ```
-# Yes, there is an apparent relationship between the bitterness of the beer and its alcoholic content. Base on visualization, there are evidences to show the higher alcohol content then the beer also has higher IBU.
+#Yes, there is an apparent relationship between the bitterness of the beer and its alcoholic content. Base on visualization, there are evidences to show the higher alcohol content then the beer also has higher IBU.
 
 
 ## KNN/CFM
@@ -252,5 +253,4 @@ ggplot(top_5_size, aes(x = Ounces, y = count)) +
   ylab("Count") +
   ggtitle("Number of Beers by Size")+ theme_economist()+theme(legend.position = "none",axis.title = element_text(size = 25),plot.title = element_text(size = 30, face = "bold"))
 ```
-
 
